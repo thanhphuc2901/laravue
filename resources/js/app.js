@@ -8,6 +8,14 @@ window.Vue = require('vue');
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 
+// import Vue from 'vue';
+// import BootstrapVue from 'bootstrap-vue';
+
+// Vue.use(BootstrapVue);
+
+// import 'bootstrap/dist/css/bootstrap.css';
+// import 'bootstrap-vue/dist/bootstrap-vue.css';
+
 import VueAxios from 'vue-axios';
 import axios from 'axios';
 

@@ -7,35 +7,58 @@
                     <router-link :to="{ name: 'create' }" class="btn btn-primary">Tạo mới</router-link>
                 </div>
             </div><br />
-
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Mã</th>
-                    <th>Tên học sinh</th>
-                    <th>Giới tính</th>
-                    <th>Lớp</th>
-                    <th>Địa chỉ</th>
-                    <th>Email</th>
-                    <th>GPA</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="student in lists" :key="student.id">
-                    <td>{{ student.student_code }}</td>
-                    <td>{{ student.student_name }}</td>
-                    <td>{{ student.gender }}</td>
-                    <td>{{ student.grade }}</td>
-                    <td>{{ student.address }}</td>
-                    <td>{{ student.email }}</td>
-                    <td>{{ student.GPA }}</td>
-                    <td><router-link :to="{name: 'edit', params: { id: student.id }}" class="btn btn-primary glyphicon glyphicon-edit"></router-link><button type="button" class="btn btn-danger glyphicon glyphicon-trash" @click.prevent="deleteStudent(student.id)"></button></td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-container">
+            <table class="table table-hover list-student-table">
+                <thead>
+                    <tr>
+                        <th>Mã</th>
+                        <th>Tên học sinh</th>
+                        <th>Giới tính</th>
+                        <th>Lớp</th>
+                        <th>Địa chỉ</th>
+                        <th>Email</th>
+                        <th>GPA</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="student in lists" :key="student.id">
+                        <td>{{ student.student_code }}</td>
+                        <td>{{ student.student_name }}</td>
+                        <td>{{ student.gender }}</td>
+                        <td>{{ student.grade }}</td>
+                        <td>{{ student.address }}</td>
+                        <td>{{ student.email }}</td>
+                        <td>{{ student.GPA }}</td>
+                        <td><router-link :to="{name: 'edit', params: { id: student.id }}" class="btn btn-primary glyphicon glyphicon-edit"></router-link>&nbsp;<button type="button" class="btn btn-danger glyphicon glyphicon-trash" @click.prevent="deleteStudent(student.id)"></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
+
+<style lang="scss" scoped>
+    th, td {
+        text-align: center;
+    }
+    th {
+        border-bottom: 1px solid black !important;
+    }
+    td {
+        vertical-align: middle !important;
+    }
+    h2 {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    thead {
+        background-color: #4CAF50;
+    }
+    .table-container {
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+</style>
 
 <script>
     export default {
