@@ -18,6 +18,13 @@
         <div id="app">
             <example-component></example-component>
         </div>
+        <style>
+            body {
+                background-image: url("/images/pexels-photo-160107.jpeg");
+                background-repeat: no-repeat;
+                
+            }
+        </style>
         <script src="{{ mix('js/app.js') }}" type="text/javascript"></script>
     </body>
 </html>

@@ -16,9 +16,9 @@ class CreateStudentsTable extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('student_code');
-            $table->string('student_name')->nullable();
+            $table->string('student_name');
             $table->tinyInteger('gender')->default(0);
-            $table->tinyInteger('grade')->nullable();
+            $table->tinyInteger('grade')->default(0);
             $table->string('address')->nullable();
             $table->string('email')->nullable();
             $table->float('GPA')->nullable();

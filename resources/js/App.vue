@@ -54,7 +54,7 @@
 </template>
 <style lang="scss" scoped>
     .main {
-        padding: 5px;
+        padding: 10px;
     }
     img {
         width: auto;

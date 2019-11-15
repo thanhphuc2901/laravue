@@ -1,9 +1,9 @@
 <template>
-    <div>
+    <div class="main">
         <h2>Danh sách học sinh</h2>
             <div class="row">
-                <div class="col-md-10"></div>
-                <div class="col-md-2">
+                <div class="col-md-11"></div>
+                <div class="col-md-1">
                     <router-link :to="{ name: 'create' }" class="btn btn-primary">Tạo mới</router-link>
                 </div>
             </div><br />
@@ -25,8 +25,16 @@
                     <tr v-for="student in lists" :key="student.id">
                         <td>{{ student.student_code }}</td>
                         <td>{{ student.student_name }}</td>
-                        <td>{{ student.gender }}</td>
-                        <td>{{ student.grade }}</td>
+                        <td><span v-if="student.gender == 0">Nam</span>
+                            <span v-if="student.gender == 1">Nữ</span>
+                            <span v-if="student.gender == 2">Khác</span>
+                        </td>
+                        <td>
+                            <span v-if="student.grade == 0">10</span>
+                            <span v-if="student.grade == 1">11</span>
+                            <span v-if="student.grade == 2">12</span>
+                        </td>
+
                         <td>{{ student.address }}</td>
                         <td>{{ student.email }}</td>
                         <td>{{ student.GPA }}</td>
@@ -58,6 +66,11 @@
         border: 1px solid black;
         border-radius: 5px;
     }
+    .main {
+        background-color: white;
+        height: 100%;
+        border-radius: 5px;
+    }
 </style>
 
 <script>
@@ -75,10 +88,12 @@
         },
         methods: {
             deleteStudent(id) {
-                let uri = `http://localhost:8000/api/list/delete/${id}`;
-                this.axios.delete(uri).then(response => {
+                if(confirm("Bạn có chắc chắn muốn xóa bản ghi này?")){
+                    let uri = `http://localhost:8000/api/list/delete/${id}`;
+                    this.axios.delete(uri).then(response => {
                     this.lists.splice(this.lists.indexOf(id), 1);
                 });
+                }
             }
         }
     }

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="edit">
         <h1>Cập nhật dữ liệu học sinh</h1>
         <div class="component-cotainer">
             <form @submit.prevent="updateStudent">
@@ -76,6 +76,11 @@
 </template>
 
 <style>
+    .edit {
+        background-color: white;
+        border-radius: 5px;
+        padding: 1px 10px 10px 10px;
+    }
     .component-cotainer {
         border: 1px solid black;
         border-radius: 5px;
