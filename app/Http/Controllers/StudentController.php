@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Resources\StudentCollection;
 use App\Student;
+use DB;
 
 class StudentController extends Controller
 {
@@ -20,12 +21,15 @@ class StudentController extends Controller
         ]);
 
         $student->save();
-
         return response()->json('success');
     }
     //Phương thức load màn hình index
     public function index() {
-        return new StudentCollection(Student::all());
+        // return new StudentCollection(Student::all());
+        $student = Student::paginate(10);
+        // json_encode($student);
+        // dd(response()->json($student));
+        return response()->json($student);
     }
 
     //Sửa
@@ -44,6 +48,6 @@ class StudentController extends Controller
     public function delete($id) {
         $student = Student::find($id);
         $student->delete();
-        return response()->json('successfully deleted');
+        return response()->json('successfully deleted')->paginate(10);
     }
 }

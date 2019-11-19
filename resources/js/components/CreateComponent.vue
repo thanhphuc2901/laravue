@@ -1,3 +1,4 @@
+<!--Component màn hình Thêm thông tin-->
 <template>
     <div class="create">
         <h1>Tạo mới dữ liệu học sinh</h1>
@@ -77,6 +78,7 @@
                 </div><br />
                 <div class="form-group">
                     <button class="btn btn-primary">Tạo mới</button>
+                    <button class="btn btn-danger" @click.prevent="cancelForm">Hủy bỏ</button>
                 </div>
             </form>
         </div>
@@ -133,9 +135,15 @@
                 this.errors = [];
                 if (!this.student.student_code) {
                     this.errors.push('Không bỏ trống mã học sinh');
+                    document.getElementById('student_code').style.borderColor = "red";
+                } else {
+                    document.getElementById('student_code').style.borderColor = "black";
                 }
                 if (!this.student.student_name) {
                     this.errors.push('Không bỏ trống tên học sinh');
+                    document.getElementById('student_name').style.borderColor = "red";
+                } else {
+                    document.getElementById('student_code').style.borderColor = "black";
                 }
                 e.preventDefault();
 
@@ -145,7 +153,12 @@
                     this.$router.push({name: 'lists'});
                     });
                 }
-                
+            },
+            cancelForm: function(e) {
+                if(confirm("Bạn có muốn thoát thao tác?")){
+                    this.show = false;
+                    this.$router.push({ name: 'lists' });
+                }
             }
         }
     }

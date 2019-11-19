@@ -38,7 +38,7 @@
                         <div class="form-group">
                             <input type="text" class="form-control" placeholder="Search">
                         </div>
-                        <button type="submit" class="btn btn-default btn-search">Submit</button>
+                        <button type="submit" class="btn btn-default btn-search">Tìm kiếm</button>
                     </form>
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="#"><span class="glyphicon glyphicon-user"></span>Đăng ký</a></li>
@@ -80,5 +80,6 @@
 
 <script>
     export default{
+        
     }
 </script>

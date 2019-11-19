@@ -5,8 +5,16 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+import VueResource from 'vue-resource';
+Vue.use(require('vue-resource'));
+Vue.component('pagination', require('laravel-vue-pagination'));
+// Vue.component('index-component', require('./components/IndexComponent.vue'));
+
+
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
+
+
 
 // import Vue from 'vue';
 // import BootstrapVue from 'bootstrap-vue';
@@ -15,6 +23,7 @@ Vue.use(VueRouter);
 
 // import 'bootstrap/dist/css/bootstrap.css';
 // import 'bootstrap-vue/dist/bootstrap-vue.css';
+
 
 import VueAxios from 'vue-axios';
 import axios from 'axios';
