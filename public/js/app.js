@@ -2062,6 +2062,7 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
+    //Hàm thêm dữ liệu
     addStudent: function addStudent(e) {
       var _this = this;
 
@@ -2090,9 +2091,13 @@ __webpack_require__.r(__webpack_exports__);
           _this.$router.push({
             name: 'lists'
           });
+        })["catch"](function () {
+          alert('Mã học sinh đã tồn tại! Vui lòng nhập mã khác!');
+          document.getElementById('student_code').style.borderColor = "red";
         });
       }
     },
+    //Thoát form thêm mới
     cancelForm: function cancelForm(e) {
       if (confirm("Bạn có muốn thoát thao tác?")) {
         this.show = false;
@@ -2227,11 +2232,11 @@ __webpack_require__.r(__webpack_exports__);
 
     var uri = "http://localhost:8000/api/list/edit/".concat(this.$route.params.id);
     this.axios.get(uri).then(function (response) {
-      _this.student = response.data;
-      dd(response.data);
+      _this.student = response.data; // dd(response.data);
     });
   },
   methods: {
+    //Hàm chỉnh sửa dữ liệu
     updateStudent: function updateStudent(e) {
       var _this2 = this;
 
@@ -2260,9 +2265,13 @@ __webpack_require__.r(__webpack_exports__);
           _this2.$router.push({
             name: 'lists'
           });
+        })["catch"](function () {
+          alert('Mã học sinh đã tồn tại! Vui lòng nhập mã khác!');
+          document.getElementById('student_code').style.borderColor = "red";
         });
       }
     },
+    //Thoát form thêm mới
     cancelForm: function cancelForm(e) {
       if (confirm("Bạn có muốn thoát thao tác?")) {
         this.show = false;
@@ -2441,7 +2450,9 @@ __webpack_require__.r(__webpack_exports__);
       if (confirm("Bạn có chắc chắn muốn xóa bản ghi này?")) {
         var uri = "http://localhost:8000/api/list/delete/".concat(id);
         this.axios["delete"](uri).then(function (response) {
-          _this.lists.splice(_this.lists.indexOf(id), 1);
+          _this.lists.data.splice(_this.lists.data.indexOf(function (student) {
+            return student.id = id;
+          }), 1);
         });
       }
     },
@@ -22470,7 +22481,7 @@ var render = function() {
           "form",
           {
             staticClass: "navbar-form navbar-left",
-            attrs: { action: "/action_page.php" }
+            attrs: { action: "/search" }
           },
           [
             _c("label", { staticClass: "btn btn-default fill" }, [
@@ -22488,7 +22499,7 @@ var render = function() {
                   }
                 ],
                 staticClass: "form-control",
-                attrs: { type: "text", placeholder: "Nhập mã/tên học sinh" },
+                attrs: { type: "text", placeholder: "Nhập tên học sinh" },
                 domProps: { value: _vm.searchQuerry },
                 on: {
                   input: function($event) {

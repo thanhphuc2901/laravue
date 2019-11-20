@@ -4,10 +4,10 @@
         <h2>Danh sách học sinh</h2>
             <div class="row">
                 <div class="col-md-11">
-                    <form class="navbar-form navbar-left" action="/action_page.php">
+                    <form class="navbar-form navbar-left" action="/search">
                         <label class="btn btn-default fill">Tiêu chí tìm kiếm</label>
                         <div class="form-group">
-                            <input type="text" class="form-control" v-model="searchQuerry" placeholder="Nhập mã/tên học sinh">
+                            <input type="text" class="form-control" v-model="searchQuerry" placeholder="Nhập tên học sinh">
                         </div>
                     </form>
                 </div>
@@ -120,8 +120,8 @@
                 if(confirm("Bạn có chắc chắn muốn xóa bản ghi này?")){
                     let uri = `http://localhost:8000/api/list/delete/${id}`;
                     this.axios.delete(uri).then(response => {
-                    this.lists.splice(this.lists.indexOf(id), 1);
-                });
+                        this.lists.data.splice(this.lists.data.indexOf((student) => {return student.id = id}), 1);
+                    });
                 }
             },
             //Hàm phân trang

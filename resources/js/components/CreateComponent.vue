@@ -130,6 +130,7 @@
             }
         },
         methods: {
+            //Hàm thêm dữ liệu
             addStudent: function(e) {
                 //Validate trống
                 this.errors = [];
@@ -151,9 +152,13 @@
                     let uri = 'http://localhost:8000/api/list/create';
                     this.axios.post(uri, this.student).then((response) => {
                     this.$router.push({name: 'lists'});
+                    }).catch(() => {
+                        alert('Mã học sinh đã tồn tại! Vui lòng nhập mã khác!');
+                        document.getElementById('student_code').style.borderColor = "red";
                     });
                 }
             },
+            //Thoát form thêm mới
             cancelForm: function(e) {
                 if(confirm("Bạn có muốn thoát thao tác?")){
                     this.show = false;

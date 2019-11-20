@@ -110,10 +110,11 @@
             let uri = `http://localhost:8000/api/list/edit/${this.$route.params.id}`;
             this.axios.get(uri).then((response) => {
                 this.student = response.data;
-                dd(response.data);
+                // dd(response.data);
             });
         },
         methods: {
+            //Hàm chỉnh sửa dữ liệu
             updateStudent: function(e) {
                 //Validate trống
                 this.errors = [];
@@ -135,9 +136,13 @@
                     let uri = `http://localhost:8000/api/list/update/${this.$route.params.id}`;
                     this.axios.post(uri, this.student).then((response) => {
                         this.$router.push({name: 'lists'});
+                    }).catch(() => {
+                        alert('Mã học sinh đã tồn tại! Vui lòng nhập mã khác!');
+                        document.getElementById('student_code').style.borderColor = "red";
                     });
                 }
             },
+            //Thoát form thêm mới
             cancelForm: function(e) {
                 if(confirm("Bạn có muốn thoát thao tác?")){
                     this.show = false;
