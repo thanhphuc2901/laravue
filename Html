@@ -1,292 +1,399 @@
-CREATE TABLE [dbo].[Users](
-	[EmpCode] [nvarchar](10) NOT NULL,
-	[FullName] [nvarchar](max) NULL,
-	[Password] [nvarchar](max) NULL,
-	[Team] [nvarchar](20) NULL,
-	[Position] [nvarchar](20) NULL,
-	[Email] [nvarchar](max) NULL,
-	[Cellphone] [nvarchar](50) NULL,
-	[TeamID] [int] NULL,
- CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
-(
-	[EmpCode] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+-------------Home/Index------------
+@model Assets.Web.Models.DashboardViewModel
 
-GO
-
-ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_Teams] FOREIGN KEY([TeamID])
-REFERENCES [dbo].[Teams] ([ID])
-GO
-
-ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Teams]
-------------------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE [dbo].[Teams](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [varchar](50) NOT NULL,
- CONSTRAINT [PK_Teams] PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-------------------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE [dbo].[Roles](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [varchar](50) NOT NULL,
-	[Priority] [int] NULL DEFAULT ((1)),
-PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-------------------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE [dbo].[UserRoles](
-	[EmpCode] [nvarchar](10) NOT NULL,
-	[RoleID] [int] NOT NULL
-) ON [PRIMARY]
-
-GO
-
-ALTER TABLE [dbo].[UserRoles]  WITH CHECK ADD  CONSTRAINT [FK_UserRoles_Roles] FOREIGN KEY([RoleID])
-REFERENCES [dbo].[Roles] ([ID])
-GO
-
-ALTER TABLE [dbo].[UserRoles] CHECK CONSTRAINT [FK_UserRoles_Roles]
-GO
-
-ALTER TABLE [dbo].[UserRoles]  WITH CHECK ADD  CONSTRAINT [FK_UserRoles_Users] FOREIGN KEY([EmpCode])
-REFERENCES [dbo].[Users] ([EmpCode])
-GO
-
-ALTER TABLE [dbo].[UserRoles] CHECK CONSTRAINT [FK_UserRoles_Users]
-------------------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE [dbo].[Laptops](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [nvarchar](max) NULL,
-	[Serial] [nvarchar](max) NULL,
-	[IsActive] [bit] NULL,
-	[Status] [int] NULL,
-	[Battery] [bit] NULL,
-	[Mouse] [bit] NULL,
-	[Charger] [bit] NULL,
-	[USB] [bit] NULL,
-	[CreatedBy] [nvarchar](max) NULL,
-	[CreatedDate] [datetime] NULL,
-	[ModifiedBy] [nvarchar](max) NULL,
-	[ModifiedDate] [datetime] NULL,
- CONSTRAINT [PK_Laptops] PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-------------------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE [dbo].[Booking_Laptop](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[EmpCode] [nvarchar](10) NULL,
-	[FullName] [nvarchar](max) NULL,
-	[Position] [nvarchar](20) NULL,
-	[Team] [nvarchar](20) NULL,
-	[Reason] [nvarchar](max) NULL,
-	[IsOverDue] [bit] NULL,
-	[Cancel] [bit] NULL,
-	[CreatedDate] [datetime] NULL,
-	[CreatedBy] [nvarchar](max) NULL,
-	[ModifiedDate] [datetime] NULL,
-	[ModifiedBy] [nvarchar](max) NULL,
- CONSTRAINT [PK_Booking_Laptop] PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-------------------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE [dbo].[Booking_Laptop_Items](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[LaptopID] [int] NULL,
-	[RequestID] [int] NULL,
-	[Item] [nvarchar](max) NULL,
-	[Serial] [nvarchar](max) NULL,
-	[ReturnDate] [datetime] NULL,
-	[IsOverDue] [bit] NULL,
-	[BookingApprovedBy] [nvarchar](max) NULL,
-	[BookingApprovedStatus] [int] NULL,
-	[BookingApprovedRemark] [nvarchar](max) NULL,
-	[BookingApprovedDate] [datetime] NULL,
-	[ReturnApprovedBy] [nvarchar](max) NULL,
-	[ReturnApprovedStatus] [int] NULL,
-	[ReturnApprovedRemark] [nvarchar](max) NULL,
-	[ReturnApprovedDate] [datetime] NULL,
- CONSTRAINT [PK_Booking_Laptop_Items] PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-
-GO
-
-ALTER TABLE [dbo].[Booking_Laptop_Items]  WITH CHECK ADD  CONSTRAINT [FK_Booking_Laptop_Items] FOREIGN KEY([RequestID])
-REFERENCES [dbo].[Booking_Laptop] ([ID])
-GO
-
-ALTER TABLE [dbo].[Booking_Laptop_Items] CHECK CONSTRAINT [FK_Booking_Laptop_Items]
-GO
-
-ALTER TABLE [dbo].[Booking_Laptop_Items]  WITH CHECK ADD  CONSTRAINT [FK_Laptops] FOREIGN KEY([LaptopID])
-REFERENCES [dbo].[Laptops] ([ID])
-GO
-
-ALTER TABLE [dbo].[Booking_Laptop_Items] CHECK CONSTRAINT [FK_Laptops]
-
-
-
-
-
-
-
-
-****
-using Assets.Model.EF;
-using Assets.Web.Common;
-using Assets.Web.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-
-namespace Assets.Web.Controllers
-{
-    public class AssetController : BaseController
-    {
-        private AssetDbContext dbContext;
-
-        public AssetController()
-        {
-            dbContext = new AssetDbContext();
-        }
-
-        // GET: Asset
-        /// <summary>
-        /// Hàm show dữ liệu sử dụng ajax
-        /// </summary>
-        /// <param name="searchString"></param>
-        /// <param name="page"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult FetchData()
-        {
-            var currentRole = (HttpContext.User as CustomPrincipal).PriorityRole;
-
-            var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-
-            var model = dbContext.Laptops.Where(b => currentRole >= 2).OrderByDescending(x => x.ID).ToList();
-
-            return Json(new { data = model, currentRole, recordsTotal = dbContext.Laptops.Count(), recordsFiltered = model.Count() });
-        }
-
-        /// <summary>
-        /// Phương thức load view form tạo mới
-        /// </summary>
-        /// <returns></returns>
-        [AuthorizeUser(AccessLevel = 2)]
-        [HttpPost]
-        public ActionResult Create(Laptops model)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return Content("Bạn cần nhập đầy đủ thông tin");
-                }
-
-                model.CreatedDate = DateTime.Now;
-                var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-                model.CreatedBy = user.EmpCode + "|" + user.FullName;
-
-                var lap = dbContext.Laptops.Add(model);
-                dbContext.SaveChanges();
-                return Content("Success");
-            }
-            catch (Exception ex)
-            {
-                return Content("Lỗi trong quá trình xử lý");
-            }
-        }
-
-        [AuthorizeUser(AccessLevel = 2)]
-        [HttpGet]
-        public ActionResult Delete(int id)
-        {
-            var lap = dbContext.Laptops.FirstOrDefault(t => t.ID == id);
-            dbContext.Laptops.Remove(lap);
-
-            dbContext.SaveChanges();
-
-            return Content("Success");
-        }
-
-        /// <summary>
-        /// Phương thức load view sửa
-        /// </summary>
-        /// <returns></returns>
-        /// 
-        [AuthorizeUser(AccessLevel = 2)]
-        [HttpGet]
-        public JsonResult Detail(int id)
-        {
-            var lap = dbContext.Laptops.Find(id);
-            return Json(new { data = lap, status = true }, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Phương thức sửa cho PIC
-        /// </summary>
-        /// <param name="go_Out"></param>
-        /// <returns></returns>
-        /// 
-        [AuthorizeUser(AccessLevel = 2)]
-        [HttpPost]
-        public ActionResult Edit(Laptops model)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return Content("Dữ liệu nhập vào không đúng");
-                }
-
-                var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-
-                var lap = dbContext.Laptops.FirstOrDefault(t => t.ID == model.ID);
-                lap.ModifiedBy = user.EmpCode + "|" + user.FullName;
-                lap.ModifiedDate = DateTime.Now;
-                lap.Name = model.Name;
-                lap.Serial = model.Serial;
-                lap.IsActive = model.IsActive;
-                lap.Status = model.Status;
-                lap.Battery = model.Battery;
-                lap.Charger = model.Charger;
-                lap.Mouse = model.Mouse;
-
-                dbContext.SaveChanges();
-
-                return Content("Success");
-            }
-            catch (System.Exception ex)
-            {
-                return Content("Lỗi trong quá trình xử lý");
-            }
-        }
-    }
+@{
+    ViewBag.Title = "Trang chủ";
 }
 
+@section styles{
+    <link href="~/adminlte/css/jquery-datatables.min.css" rel="stylesheet" />
+    <link href="~/adminlte/css/jquery-confirm.css" rel="stylesheet" />
+    <link href="~/adminlte/css/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="~/adminlte/css/customize.css" rel="stylesheet" />
 
-*******************************
+    <style>
+        label {
+            font-weight: 500 !important;
+            font-size: 0.9rem;
+        }
+    </style>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3 col-6" id="open-free-lap" style="cursor:pointer">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>@ViewBag.CountFree</h3>
+                        <p>Số máy sẵn sàng</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-laptop"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6" id="open-active-lap" style="cursor:pointer">
+                <!-- small box -->
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>@ViewBag.CountActive</h3>
+                        <p>Số máy đang được mượn</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6" id="open-overdue-lap" style="cursor:pointer">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>0</h3>
+                        <p>Số máy quá hạn trả</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-android-warning"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6" id="open-break-lap" style="cursor:pointer">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>@ViewBag.CountBreak</h3>
+                        <p>Số máy cần sửa chữa</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-ios-cog"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!--Danh sách máy FREE-->
+        <div class="row collapse" id="tbl-free-lap">
+            <!-- Main content -->
+            <section class="content" style="width: 100%">
+                <div class="container-fluid">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="row" style="padding-bottom: 10px">
+                                <div class="col-10">
+                                    <button id="btn-add" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#registerModal">
+                                        <i class="fas fa-edit"></i> Đăng ký
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
+                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
+                                    <thead style="background:#17a2b8; color:white; text-align:center">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên máy</th>
+                                            <th>Số seri</th>
+                                            <th>Pin</th>
+                                            <th>Chuột</th>
+                                            <th>Sạc</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in ViewBag.Free)
+                                    {
+                                        <tr>
+                                            <td>@item.ID</td>
+                                            <td>@item.Name</td>
+                                            <td>@item.Serial</td>
+                                            <td>
+                                                @if (@item.Battery == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Mouse == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Charger == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!--Danh sách máy ĐANG ACTIVE-->
+        <div class="row collapse" id="tbl-active-lap">
+            <!-- Main content -->
+            <section class="content" style="width: 100%">
+                <div class="container-fluid">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
+                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
+                                    <thead style="background:#28a745; color:white; text-align:center">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên máy</th>
+                                            <th>Số seri</th>
+                                            <th>Pin</th>
+                                            <th>Chuột</th>
+                                            <th>Sạc</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in ViewBag.Active)
+                                    {
+                                        <tr>
+                                            <td>@item.ID</td>
+                                            <td>@item.Name</td>
+                                            <td>@item.Serial</td>
+                                            <td>
+                                                @if (@item.Battery == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Mouse == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Charger == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!--Danh sách máy BREAK-->
+        <div class="row collapse" id="tbl-break-lap">
+            <!-- Main content -->
+            <section class="content" style="width: 100%">
+                <div class="container-fluid">
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
+                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
+                                    <thead style="background:#dc3545; color:white; text-align:center">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên máy</th>
+                                            <th>Số seri</th>
+                                            <th>Pin</th>
+                                            <th>Chuột</th>
+                                            <th>Sạc</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in ViewBag.Break)
+                                    {
+                                        <tr>
+                                            <td>@item.ID</td>
+                                            <td>@item.Name</td>
+                                            <td>@item.Serial</td>
+                                            <td>
+                                                @if (@item.Battery == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Mouse == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (@item.Charger == true)
+                                                {
+                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="registerModal" role="dialog">
+        <div class="modal-dialog modal-xl">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" style="color:dodgerblue">Đăng ký thiết bị</h4>
+                    <button type="button" class="close" data-dismiss="modal" style="color:red">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 row-form">
+                        <div class="column form-horizontal form-left col-md-7">
+                            <div class="form-group row-1 input-group">
+                                <label class="control-label col-2 lb">Mã CNV <span class="red">(*)</span></label>
+                                <div class="col-md-4 input-group input-group-sm">
+                                    <input class="form-control input-previous-button col-md-12" id="txtEmpCode" maxlength="8" autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="form-group input-group">
+                                <label class="control-label col-md-2 top-space">Lý do <span class="red">(*)</span></label>
+                                <div class="col-md-10 input-group-sm">
+                                    <textarea class="form-control col-md-12" style="resize: none" id="reason"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="column col-md-1 col-mid"></div>
+
+                        <!--Cột bên phải dành cho thông tin nhân viên-->
+                        <div class="column form-horizontal form-right col-md-4">
+                            <!--Ảnh profile-->
+                            <div class="form-group col-12 profile-img">
+                                <div class="img-profile" id="emp_img">
+                                    <img id="img-profile" src="~/adminlte/img/the-world.jpg" />
+                                </div>
+                            </div>
+                            <!--Thông tin profile-->
+                            <div class="form-group input-group input-group-sm">
+                                <label class="col-3 top-space" for="FullName">Họ và tên</label>
+                                <input readonly class="form-control col-9 input-previous-button" id="txtFullName" />
+                            </div>
+                            <div class="form-group input-group input-group-sm">
+                                <label class="col-3 top-space" for="Positon">Vị trí</label>
+                                <input readonly class="form-control col-9 input-previous-button" id="txtPosition" />
+                            </div>
+                            <div class="form-group input-group input-group-sm">
+                                <label class="col-3 top-space" for="Positon">Phòng ban</label>
+                                <input readonly class="form-control col-9 input-previous-button" id="txtTeam" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Đăng ký</button>
+                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+@section scripts {
+    <script src="~/adminlte/js/sortable.js"></script>
+    <script src="~/adminlte/js/jquery-ui.js"></script>
+    <script src="~/adminlte/js/jquery.min.js"></script>
+    <script src="~/adminlte/js/jquery-confirm.js"></script>
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+
+    <script>
+        //user
+        var _user = {
+            init: function () {
+                _user.registerEvent();
+            },
+            registerEvent: function () {
+                _user.getUser();
+            },
+            getUser: function () {
+                var empCode = $("#txtEmpCode").val();
+                $.ajax({
+                    url: '/User/GetUserByCode?empCode=' + empCode,
+                    type: "GET",
+                    dataType: 'json',
+                    success: function (reponse) {
+                        console.log(reponse.data);
+                        if (reponse.status) {
+                            $('#txtFullName').val(reponse.data.FullName);
+                            $('#txtPosition').val(reponse.data.Position);
+                            $('#txtTeam').val(reponse.data.Team.Name);
+                            $("#img-profile").attr("src", `/adminlte/pictures/${empCode}.jpg`);
+                        } else {
+                            alert("Mã nhân viên không tồn tại");
+                        }
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        }
+        _user.init();
+
+        //Nhận sự kiện getUser khi gõ 7, 8 số
+        $('#txtEmpCode').keyup(function () {
+            var count = $('#txtEmpCode').val().length;
+            if (count == 7 || count == 8) {
+                _user.getUser();
+            } else {
+                $('#txtFullName').val("");
+                $('#txtPosition').val("");
+                $('#txtTeam').val("");
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['dayGrid', 'bootstrap'],
+                themeSystem: 'bootstrap'
+            });
+            calendar.render();
+        });
+
+        $('#open-free-lap').on("click", (event) => {
+            $("#tbl-free-lap").removeClass('collapse');
+            $("#tbl-active-lap").addClass('collapse');
+            $("#tbl-break-lap").addClass('collapse');
+            $("#tbl-overdue-lap").addClass('collapse');
+        });
+
+        $('#open-active-lap').on("click", (event) => {
+            $("#tbl-active-lap").removeClass('collapse');
+            $("#tbl-free-lap").addClass('collapse');
+            $("#tbl-break-lap").addClass('collapse');
+            $("#tbl-overdue-lap").addClass('collapse');
+        });
+
+        $('#open-break-lap').on("click", (event) => {
+            $("#tbl-break-lap").removeClass('collapse');
+            $("#tbl-active-lap").addClass('collapse');
+            $("#tbl-free-lap").addClass('collapse');
+            $("#tbl-overdue-lap").addClass('collapse');
+        });
+    </script>
+}
+
+---------------Asset/Index------------------------------
 
 @{
     ViewBag.Title = "Danh sách thiết bị";
@@ -819,10 +926,54 @@ namespace Assets.Web.Controllers
         $("#li-computer").addClass('menu-open');
     </script>
 }
+---------------------------UserController-----------------------------
+using Assets.Model.EF;
+using Assets.Web.Models;
+using SMS.Models.DAO;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
 
+namespace Assets.Web.Controllers
+{
+    public class UserController : BaseController
+    {
+        private AssetDbContext _context;
 
+        public UserController()
+        {
+            _context = new AssetDbContext();
+        }
 
-***************
+        // GET: User
+        public ActionResult GetUserByCode(string empCode)
+        {
+            var dao = new UserDAO();
+            Users user = new Users();
+            UserViewModel userViewModel = new UserViewModel();
+            user = dao.GetByCode(empCode);
+            userViewModel.UpdateUser(user);
+            if (userViewModel.EmpCode != null)
+            {
+                return Json(new
+                {
+                    data = userViewModel,
+                    status = true
+                }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+    }
+}
+---------------------------Layout--------------------------------------
 @using Assets.Web.Models
 
 <!DOCTYPE html>
@@ -832,7 +983,6 @@ namespace Assets.Web.Controllers
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
     <!-- Font Awesome -->
     <link rel="stylesheet" href="~/adminlte/plugins/fontawesome-free/css/all.min.css">
     <!-- Ionicons -->
@@ -1071,6 +1221,7 @@ namespace Assets.Web.Controllers
         </footer>
     </div>
     <!-- ./wrapper -->
+
     <!-- REQUIRED SCRIPTS -->
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
@@ -1082,6 +1233,7 @@ namespace Assets.Web.Controllers
     <script src="~/adminlte/js/sb-admin-2.min.js"></script>
 
     @RenderSection("scripts", required: false)
+
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -1102,127 +1254,39 @@ namespace Assets.Web.Controllers
 </body>
 </html>
 
+---------------------------------HomeController----------------------------------------------
+using Assets.Model.EF;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
 
-***********************
-@{
-    ViewBag.Title = "Trang chủ";
-}
+namespace Assets.Web.Controllers
+{
+    public class HomeController : BaseController
+    {
+        private AssetDbContext dbContext;
+        public HomeController()
+        {
+            dbContext = new AssetDbContext();
+        }
 
-<section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>0</h3>
-                        <p>Số máy sẵn sàng</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-laptop"></i>
-                    </div>
-                    <a id="open-free-lap" href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>0</h3>
-                        <p>Số máy đang được mượn</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-stats-bars"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>0</h3>
-                        <p>Số máy quá hạn trả</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-android-warning"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h3>0</h3>
-                        <p>Số máy cần sửa chữa</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-ios-cog"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="row collapse" id="tbl-free-lap">
-            <!-- Main content -->
-            <section class="content" style="width: 100%">
-                <div class="container-fluid">
-                    <div class="card">
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div class="row" style="padding-bottom: 10px">
-                                <div class="col-10">
-                                    <button id="btn-add" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addModal">
-                                        <i class="fas fa-edit"></i> Đăng ký
-                                    </button>
-                                </div>
-                                <div class="col-2 input-group input-group-sm">
-                                    <b><span class="no-margin-bottom" style="padding-top: 5px">Tìm kiếm chung</span></b>
-                                    &nbsp;
-                                    <input class="form-control bg-light to-date" type="text" id="search-all" autocomplete="off" />
-                                </div>
-                            </div>
-                            <div style="overflow-x: auto; border: 1px solid #dee2e6 ">
-                                <table id="equip-table" class="table table-bordered table-hover" style="width:100% !important">
-                                    <thead style="background:#17a2b8; color:white; text-align:center">
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Tên máy</th>
-                                            <th>Số seri</th>
-                                            <th>Pin</th>
-                                            <th>Chuột</th>
-                                            <th>Sạc</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tblData"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div id="pagination" class="pagination"></div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </div>
-    <!-- /.container-fluid -->
-</section>
-
-@section scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: ['dayGrid', 'bootstrap'],
-                themeSystem: 'bootstrap'
-            });
-            calendar.render();
-        });
-
-        $('#open-free-lap').on("click", (event) => {
-            if (true) {
-
-            }
-            $("#tbl-free-lap").removeClass('collapse');
-        });
-    </script>
+        /// <summary>
+        /// Phương thức load danh sách 4 hạng mục
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Index()
+        {
+            //Hạng mục Laptop đang free
+            var lap = dbContext.Laptops.ToList();
+            ViewBag.Free = lap.Where(t => (t.IsActive == null || t.IsActive == false) && t.Status != 0);
+            ViewBag.Active = lap.Where(t => (t.IsActive == true) && t.Status != 0);
+            ViewBag.Break = lap.Where(t => t.Status == 0);
+            ViewBag.CountFree = lap.Where(t => (t.IsActive == null || t.IsActive == false) && t.Status != 0).Count();
+            ViewBag.CountActive = lap.Where(t => (t.IsActive == true) && t.Status != 0).Count();
+            ViewBag.CountBreak = lap.Where(t => t.Status == 0).Count();
+            return View();
+        }
+    }
 }
