@@ -1,14 +1,13 @@
--------------Home/Index------------
 @model Assets.Web.Models.DashboardViewModel
 
 @{
     ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section styles{
     <link href="~/adminlte/css/jquery-datatables.min.css" rel="stylesheet" />
     <link href="~/adminlte/css/jquery-confirm.css" rel="stylesheet" />
-    <link href="~/adminlte/css/sb-admin-2.min.css" rel="stylesheet" />
     <link href="~/adminlte/css/customize.css" rel="stylesheet" />
 
     <style>
@@ -21,6 +20,60 @@
 
 <section class="content">
     <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3 col-6" id="open-free-lap" style="cursor:pointer">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>@ViewBag.CountFree</h3>
+                        <p>Số máy sẵn sàng</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-laptop"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6" id="open-active-lap" style="cursor:pointer">
+                <!-- small box -->
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>@ViewBag.CountActive</h3>
+                        <p>Số máy đang được mượn</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6" id="open-overdue-lap" style="cursor:pointer">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>0</h3>
+                        <p>Số máy quá hạn trả</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-android-warning"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6" id="open-break-lap" style="cursor:pointer">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>@ViewBag.CountBreak</h3>
+                        <p>Số máy cần sửa chữa</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-ios-cog"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-lg-3 col-6" id="open-free-lap" style="cursor:pointer">
                 <div class="small-box bg-info">
@@ -90,7 +143,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
+                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 373px">
                                 <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
                                     <thead style="background:#17a2b8; color:white; text-align:center">
                                         <tr>
@@ -296,6 +349,61 @@
                             </div>
                         </div>
                     </div>
+                    <div class="note col-12">
+                        <label class="control-label" style="color: dodgerblue"><u>Lưu ý</u>: <span style="color: #858796">&nbsp;Các trường <span style="color:red">(*)</span> bắt buộc phải nhập đầy đủ.</span></label>
+                    </div>
+                    <!--Đăng ký danh sách thiết bị-->
+                    <div class="bottom">
+                        <div class="form-horizontal col-12 row-add" style="width: 100%">
+                            <div class="items-container">
+                                <table class="table-bordered table table-hover table-sm" id="lap-items" style="font-family:Source Sans Pro">
+                                    <thead style="text-align:center; font-size:0.9rem">
+                                        <tr class="table-header-items">
+                                            <th></th>
+                                            <th>Máy tính <span class="red">(*)</span></th>
+                                            <th>Chuột</th>
+                                            <th>Sạc</th>
+                                            <th>Pin</th>
+                                            <th colspan="2">Thời gian trả máy <span class="red">(*)</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="row-items">
+                                            <td>
+                                                <label class="control-label btn btn-sm delete-items"><i class="fas fa-times-circle" style="color:red"></i></label>
+                                            </td>
+                                            <td class="input-group-sm">
+                                                <select class="form-control input-previous-button laptop">
+                                                    @foreach (var item in ViewBag.Free)
+                                                    {
+                                                        <option value="@item.ID" id="@item.ID">@item.Name</option>
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td class="input-group-sm">
+                                            </td>
+                                            <td class="input-group-sm">
+                                            </td>
+                                            <td class="input-group-sm">
+                                            </td>
+                                            <td class="input-group-sm">
+                                                <input class="form-control datepicker returnDate" placeholder="Ngày" style="background: white" readonly autocomplete="off" />
+                                            </td>
+                                            <td class="input-group-sm">
+                                                <input class="form-control timepicker returnTime" placeholder="Giờ" type="time" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center">
+                        <label id="add-row-items" class="btn-primary btn top-space btn-sm" title="Thêm hàng hóa khác" style="cursor: pointer; margin-top:8px;">
+                            <i class="fas fa-plus"></i>&nbsp; Thêm máy
+                        </label>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-sm btn-primary">Đăng ký</button>
@@ -309,9 +417,6 @@
 
 @section scripts {
     <script src="~/adminlte/js/sortable.js"></script>
-    <script src="~/adminlte/js/jquery-ui.js"></script>
-    <script src="~/adminlte/js/jquery.min.js"></script>
-    <script src="~/adminlte/js/jquery-confirm.js"></script>
     <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
 
     <script>
@@ -334,8 +439,7 @@
                         if (reponse.status) {
                             $('#txtFullName').val(reponse.data.FullName);
                             $('#txtPosition').val(reponse.data.Position);
-                            $('#txtTeam').val(reponse.data.Team.Name);
-                            $("#img-profile").attr("src", `/adminlte/pictures/${empCode}.jpg`);
+                            $('#txtTeam').val(reponse.data.Team);
                         } else {
                             alert("Mã nhân viên không tồn tại");
                         }
@@ -361,15 +465,62 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: ['dayGrid', 'bootstrap'],
-                themeSystem: 'bootstrap'
-            });
-            calendar.render();
-        });
+        var date = new Date();
+        var day = date.getDate(),
+            hour = date.getHours(),
+            min = date.getMinutes();
+        day = (day < 10 ? "0" : "") + day;
+        hour = (hour < 10 ? "0" : "") + hour;
+        min = (min < 10 ? "0" : "") + min;
+        displayTime = hour + ":" + min;
+        var elements = document.getElementsByClassName("returnTime");
+        for (var i = 0, length = elements.length; i < length; i++) {
+            elements[i].value = displayTime;
+        }
 
+        $("#add-row-items").off('click').on('click', function (e) {
+            var html = `<tr class="row-items">
+                            <td>
+                                <label class="control-label btn btn-sm delete-items"><i class="fas fa-times-circle" style="color:red"></i></label>
+                            </td>
+                            <td class="input-group-sm">
+                                <select class="form-control input-previous-button laptop">
+                                    @foreach (var item in ViewBag.Free)
+                                    {
+                                        <option value="@item.ID" id="@item.ID">@item.Name</option>
+                                    }
+                                </select>
+                            </td>
+                            <td class="input-group-sm">
+                            </td>
+                            <td class="input-group-sm">
+                            </td>
+                            <td class="input-group-sm">
+                            </td>
+                            <td class="input-group-sm">
+                                <input class="form-control datepicker returnDate" placeholder="Ngày" style="background: white" readonly autocomplete="off"/>
+                            </td>
+                            <td class="input-group-sm">
+                                <input class="form-control timepicker returnTime" placeholder="Giờ" type="time"/>
+                            </td>
+                        </tr>`;
+            $('#lap-items > tbody:last-child').append(html);
+            $('.datepicker').datepicker({
+                dateFormat: 'dd/mm/yy'
+            });
+            $("#lap-items").on("click", ".delete-items", function () {
+                $(this).closest(".row-items").remove();
+            });
+        });
+        $("#lap-items").on("click", ".delete-items", function () {
+            $(this).closest(".row-items").remove();
+        });
+        $('.datepicker').datepicker({
+            dateFormat: 'dd/mm/yy'
+        });
+    </script>
+
+    <script>
         $('#open-free-lap').on("click", (event) => {
             $("#tbl-free-lap").removeClass('collapse');
             $("#tbl-active-lap").addClass('collapse');
@@ -390,6 +541,10 @@
             $("#tbl-free-lap").addClass('collapse');
             $("#tbl-overdue-lap").addClass('collapse');
         });
+    </script>
+
+    <script>
+
     </script>
 }
 
@@ -985,6 +1140,7 @@ namespace Assets.Web.Controllers
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="~/adminlte/plugins/fontawesome-free/css/all.min.css">
+    <link href="~/adminlte/css/jquery-ui.css" rel="stylesheet" />
     <!-- Ionicons -->
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <!-- Tempusdominus Bbootstrap 4 -->
@@ -1088,15 +1244,21 @@ namespace Assets.Web.Controllers
                                 <a href="#" class="nav-link" id="computer">
                                     <i class="nav-icon fas fa-th"></i>
                                     <p>
-                                        Máy tính
+                                        Kho IT
                                         <i class="right fas fa-angle-left custome-angel"></i>
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview" style="padding: 0 10px">
                                     <li class="nav-item">
                                         <a href="/Asset/Index" class="nav-link" id="list-computer">
-                                            <i class="fas fa-edit nav-icon"></i>
-                                            <p>Danh sách thiết bị</p>
+                                            <i class="fas fa-laptop-code nav-icon"></i>
+                                            <p>Laptop</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/Asset/ListEquipment" class="nav-link" id="list-equip">
+                                            <i class="fas fa-server nav-icon"></i>
+                                            <p>Thiết bị khác</p>
                                         </a>
                                     </li>
                                 </ul>
@@ -1228,6 +1390,7 @@ namespace Assets.Web.Controllers
     @Scripts.Render("~/adminlte/js")
 
     <script src="~/adminlte/js/jquery.js"></script>
+    <script src="~/adminlte/js/jquery-ui.js"></script>
     <script src="~/adminlte/jquery/bootstrap.bundle.min.js"></script>
     <script src="~/adminlte/jquery/jquery.easing.min.js"></script>
     <script src="~/adminlte/js/sb-admin-2.min.js"></script>
@@ -1253,6 +1416,7 @@ namespace Assets.Web.Controllers
     </div>
 </body>
 </html>
+
 
 ---------------------------------HomeController----------------------------------------------
 using Assets.Model.EF;
