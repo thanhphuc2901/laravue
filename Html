@@ -1,4 +1,341 @@
----------------------------Order/Index--------------------------------
+namespace Assets.Model.EF
+{
+    using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
+    public partial class Booking_Laptop
+    {
+        public int ID { get; set; }
+
+        [StringLength(10)]
+        public string EmpCode { get; set; }
+
+        public string FullName { get; set; }
+
+        [StringLength(20)]
+        public string Position { get; set; }
+
+        [StringLength(20)]
+        public string Team { get; set; }
+
+        public string Reason { get; set; }
+
+        public string ApprovedBy { get; set; }
+
+        public bool? ApprovedStatus { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm tt}")]
+        public DateTime? ApprovedDate { get; set; }
+
+        public string ApprovedRemark { get; set; }
+
+        public bool? IsOverDue { get; set; }
+
+        public bool? Cancel { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm tt}")]
+        public DateTime? CreatedDate { get; set; }
+
+        public string CreatedBy { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm tt}")]
+        public DateTime? ModifiedDate { get; set; }
+
+        public string ModifiedBy { get; set; }
+
+        [JsonIgnore]
+        public virtual ICollection<Booking_Laptop_Items> Booking_Laptop_Items { get; set; }
+    }
+}
+
+-----------------------------------------------
+
+namespace Assets.Model.EF
+{
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
+    public partial class Booking_Laptop_Items
+    {
+        public int ID { get; set; }
+
+        public int? LaptopID { get; set; }
+
+        public int? RequestID { get; set; }
+
+        public string Item { get; set; }
+
+        public string Serial { get; set; }
+
+        public string BookingDate { get; set; }
+
+        public string BookingTime { get; set; }
+
+        public string ReturnDate { get; set; }
+
+        public string ReturnTime { get; set; }
+
+        public bool? IsOverDue { get; set; }
+
+        public string BookingApprovedBy { get; set; }
+
+        public bool? BookingApprovedStatus { get; set; }
+
+        public string BookingApprovedRemark { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm tt}")]
+        public DateTime? BookingApprovedDate { get; set; }
+
+        public string ReturnApprovedBy { get; set; }
+
+        public bool? ReturnApprovedStatus { get; set; }
+
+        public string ReturnApprovedRemark { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm tt}")]
+        public DateTime? ReturnApprovedDate { get; set; }
+
+        public virtual Booking_Laptop Booking_Laptop { get; set; }
+
+        public virtual Laptops Laptops { get; set; }
+    }
+}
+
+-----------------------------------------------------
+
+namespace Assets.Model.EF
+{
+    using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
+    public partial class Laptops
+    {
+        [Key]
+        public int ID { get; set; }
+
+        public string Name { get; set; }
+
+        public string Serial { get; set; }
+
+        public bool? IsActive { get; set; }
+
+        public int? Status { get; set; }
+
+        public bool? Battery { get; set; }
+
+        public bool? Mouse { get; set; }
+
+        public bool? Charger { get; set; }
+
+        public bool? USB { get; set; }
+
+        public string CreatedBy { get; set; }
+
+        public DateTime? CreatedDate { get; set; }
+
+        public string ModifiedBy { get; set; }
+
+        public DateTime? ModifiedDate { get; set; }
+
+        [JsonIgnore]
+        public virtual ICollection<Booking_Laptop_Items> Booking_Laptop_Items { get; set; }
+    }
+}
+
+------------------------------------------------------------
+
+namespace Assets.Model.EF
+{
+    using System;
+    using System.Data.Entity;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
+    using System.DirectoryServices.AccountManagement;
+
+    public partial class AssetDbContext : DbContext
+    {
+        public AssetDbContext()
+            : base("name=AssetDbContext")
+        {
+        }
+
+        #region ConnectDomain
+        public string Host = System.Configuration.ConfigurationManager.AppSettings["AuthencationHost"];
+        public string Domain = System.Configuration.ConfigurationManager.AppSettings["AuthencationDomain"];
+
+        public string UserID { get; set; }
+        public string Password { get; set; }
+
+        public bool IsValid()
+        {
+            using (PrincipalContext pc = new PrincipalContext(ContextType.Domain, this.Host))
+            {
+                // validate the credentials
+                bool isValid = pc.ValidateCredentials(this.UserID, this.Password);
+
+                return isValid;
+            }
+        }
+        #endregion 
+        public virtual DbSet<Booking_Laptop> Booking_Laptop { get; set; }
+        public virtual DbSet<Booking_Laptop_Items> Booking_Laptop_Items { get; set; }
+        public virtual DbSet<Laptops> Laptops { get; set; }
+        public DbSet<Roles> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<Teams> Teams { get; set; }
+        public virtual DbSet<Users> Users { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Booking_Laptop>()
+                .HasMany(e => e.Booking_Laptop_Items)
+                .WithOptional(e => e.Booking_Laptop)
+                .HasForeignKey(e => e.RequestID);
+
+            modelBuilder.Entity<Booking_Laptop>()
+            .Property(e => e.FullName)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Booking_Laptop>()
+            .Property(e => e.Reason)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Booking_Laptop>()
+            .Property(e => e.ApprovedBy)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Booking_Laptop>()
+            .Property(e => e.ApprovedRemark)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Booking_Laptop>()
+            .Property(e => e.CreatedBy)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Booking_Laptop>()
+            .Property(e => e.ModifiedBy)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Booking_Laptop_Items>()
+            .Property(e => e.Item)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Booking_Laptop_Items>()
+            .Property(e => e.BookingApprovedBy)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Booking_Laptop_Items>()
+            .Property(e => e.ReturnApprovedBy)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Laptops>()
+                .HasMany(e => e.Booking_Laptop_Items)
+                .WithOptional(e => e.Laptops)
+                .HasForeignKey(e => e.LaptopID);
+
+            modelBuilder.Entity<Roles>()
+                .Property(e => e.Name)
+                .IsUnicode(true);
+
+            modelBuilder.Entity<Teams>()
+                .Property(e => e.Name)
+                .IsUnicode(true);
+
+            modelBuilder.Entity<Teams>()
+                .HasMany(e => e.Users)
+                .WithOptional(e => e.Teams)
+                .HasForeignKey(e => e.TeamID);
+
+            modelBuilder.Entity<Laptops>()
+            .Property(e => e.Name)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Laptops>()
+            .Property(e => e.CreatedBy)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Laptops>()
+            .Property(e => e.ModifiedBy)
+            .IsUnicode(true);
+
+            modelBuilder.Entity<Users>()
+            .Property(e => e.FullName)
+            .IsUnicode(true);
+        }
+    }
+}
+
+------------------------------------------
+
+using Assets.Web.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Http;
+using System.Web.Mvc;
+using System.Web.Optimization;
+using System.Web.Routing;
+using System.Web.Script.Serialization;
+using System.Web.Security;
+
+namespace Assets.Web
+{
+    public class MvcApplication : System.Web.HttpApplication
+    {
+        protected void Application_Start()
+        {
+            AreaRegistration.RegisterAllAreas();
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+            HttpConfiguration config = GlobalConfiguration.Configuration;
+        }
+
+        protected void Application_BeginRequest()
+        {
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.Cache.SetExpires(DateTime.UtcNow.AddHours(-1));
+            Response.Cache.SetNoStore();
+        }
+
+        protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
+        {
+            HttpCookie authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
+
+            if (authCookie != null)
+            {
+                FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+                CustomPrincipalSerializeModel serializeModel = serializer.Deserialize<CustomPrincipalSerializeModel>(authTicket.UserData);
+
+                CustomPrincipal newUser = new CustomPrincipal(authTicket.Name);
+                newUser.Id = serializeModel.Id;
+                newUser.FullName = serializeModel.FullName;
+                newUser.PriorityRole = serializeModel.PriorityRole;
+                newUser.RoleName = serializeModel.RoleName;
+
+                HttpContext.Current.User = newUser;
+            }
+        }
+    }
+}
+
+----------------------------------------------------------
+
 
 @{
     ViewBag.Title = "Danh sách mượn máy tính";
@@ -387,65 +724,32 @@
                     },
                     {
                         data: function (res) {
-                            isActive = '';
-                            html = '';
-                            if (res.IsActive == 0 || res.IsActive == null) {
-                                isActive = ''
-                            } else if (res.IsActive == 1) {
-                                isActive = `<i class="fas fa-calendar-alt" style="color:orange"></i>`
+                            var html = '';
+                            if (res.Cancel || res.Cancel != null) {
+                                html = `<span class="red"><b>Hủy bỏ</b></span>`;
                             }
-                            html = `<span>${isActive}</span>`
+                            else {
+                                if (res.Cancel === null) {
+                                    if (res.ApprovedStatus != null) {
+                                        html = `<a class="btn btn-cancel btn-danger btn-standard" id="btnCancel" onclick="Cancel(${res.ID})" title="Hủy bỏ">
+                                               <i class="fas fa-lock" style="margin-left: -3px"></i>
+                                            </a>`
+                                    } else {
+                                        html = `<a class="btn btn-edit btn-sm btnEdit" title="Sửa" data-id=${res.ID} data-toggle="modal" data-target="#editModal">
+                                               <i class="icon far fa-edit" style="color:#4caf50"></i>
+                                            </a>
+                                            <a class="btn btn-delete btnDelete" onclick="Delete(${res.ID})" title="Xóa">
+                                               <i class="icon far fa-trash-alt" style="color: red; cursor: pointer"></i>
+                                            </a>`;
+                                    }
+                                }
+                            }
                             return html;
                         }
                     },
                     {
                         data: function (res) {
-                            html = '';
-                            battery = '';
-                            if (res.Battery == 1) {
-                                battery = `<i class="fas fa-check-square" style="color:dodgeblue"></i>`
-                            } else if (res.Battery == 0) {
-                                battery = ''
-                            }
-                            html = `<span>${battery}</span>`
-                            return html;
-                        }
-                    },
-                    {
-                        data: function (res) {
-                            html = '';
-                            mouse = '';
-                            if (res.Mouse == 1) {
-                                mouse = `<i class="fas fa-check-square" style="color:dodgeblue"></i>`
-                            } else if (res.Mouse == 0) {
-                                mouse = ''
-                            }
-                            html = `<span>${mouse}</span>`
-                            return html;
-                        }
-                    },
-                    {
-                        data: function (res) {
-                            html = '';
-                            charger = '';
-                            if (res.Charger == 1) {
-                                charger = `<i class="fas fa-check-square" style="color:dodgeblue"></i>`
-                            } else if (res.Charger == 0) {
-                                charger = ''
-                            }
-                            html = `<span>${charger}</span>`
-                            return html;
-                        }
-                    },
-                    {
-                        data: function (res) {
-
-                            html = `<a class="btn btn-edit btn-sm btnEdit" title="Sửa" data-id=${res.ID} data-toggle="modal" data-target="#editModal">
-                                                   <i class="icon far fa-edit" style="color:#4caf50"></i>
-                                                </a>
-                                                <a class="btn btn-delete btnDelete" onclick="Delete(${res.ID})" title="Xóa">
-                                                   <i class="icon far fa-trash-alt" style="color: red; cursor: pointer"></i>
-                                                </a>`;
+                            var html = `<a href="/Order/Detail/${res.ID}" class="btn btn-standard btn-primary"><i class="fas fa-info" style="color: white"></i></a>`;
                             return html;
                         }
                     },
@@ -475,696 +779,300 @@
                 table.search($(this).val()).draw();
             })
         });
+
+        $("#booking").removeClass('collapse');
+        $("#booking").removeClass('collapsed');
+        $("#list-booking").addClass('active');
+        $("#li-booking").addClass('menu-open');
     </script>
 }
 
-----------------------------------OrderController------------------------
-using Assets.Model.EF;
-using Assets.Web.Common;
-using Assets.Web.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+-----------------------------------------------------------
 
-namespace Assets.Web.Controllers
-{
-    public class OrderController : BaseController
-    {
-        private AssetDbContext dbContext;
+@using Assets.Web.Models
 
-        public OrderController()
-        {
-            dbContext = new AssetDbContext();
-        }
+<!DOCTYPE html>
+<html lang="en">
 
-        // GET: Asset
-        /// <summary>
-        /// Hàm show dữ liệu sử dụng ajax
-        /// </summary>
-        /// <param name="searchString"></param>
-        /// <param name="page"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult FetchData()
-        {
-            var currentRole = (HttpContext.User as CustomPrincipal).PriorityRole;
-
-            var items = dbContext.Booking_Laptop_Items.ToList();
-
-            var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-
-            var model = dbContext.Booking_Laptop.Where(b => currentRole >= 1).OrderByDescending(x => x.ID).ToList();
-
-            return Json(new { data = model, items, currentRole, recordsTotal = dbContext.Booking_Laptop.Count(), recordsFiltered = model.Count() });
-        }
-
-        [AuthorizeUser(AccessLevel = 1)]
-        [HttpPost]
-        public ActionResult Create(Booking_Laptop model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Content("Bạn cần nhập đầy đủ các thông tin");
-            }
-
-            model.CreatedDate = DateTime.Now;
-            var user = (UserLogin)Session[CommonConstants.USER_SESSION];
-            model.CreatedBy = user.EmpCode + "|" + user.FullName;
-
-            var booking = dbContext.Booking_Laptop.Add(model);
-            dbContext.SaveChanges();
-            return Content("Success");
-        }
-    }
-}
-
-----------------------------------Home/Index--------------------------------
-@model Assets.Web.Models.DashboardViewModel
-
-@{
-    ViewBag.Title = "Trang chủ";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-@section styles{
-    <link href="~/adminlte/css/jquery-datatables.min.css" rel="stylesheet" />
-    <link href="~/adminlte/css/jquery-confirm.css" rel="stylesheet" />
-    <link href="~/adminlte/css/customize.css" rel="stylesheet" />
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/adminlte/plugins/fontawesome-free/css/all.min.css">
+    <link href="~/adminlte/css/jquery-ui.css" rel="stylesheet" />
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Tempusdominus Bbootstrap 4 -->
+    <link rel="stylesheet" href="~/adminlte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="~/adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="~/adminlte/plugins/jqvmap/jqvmap.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="~/adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="~/adminlte/plugins/daterangepicker/daterangepicker.css">
+    <!-- summernote -->
+    <link rel="stylesheet" href="~/adminlte/plugins/summernote/summernote-bs4.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link href="~/adminlte/css_custome/customize.css" rel="stylesheet" />
+    <link href="~/adminlte/css_custome/font.css" rel="stylesheet" />
 
     <style>
-        label {
-            font-weight: 500 !important;
-            font-size: 0.9rem;
+        .active {
+            background: #eaecf4;
+            color: #72777A;
         }
     </style>
-}
 
-<section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-3 col-6" id="open-free-lap" style="cursor:pointer">
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>@ViewBag.CountFree</h3>
-                        <p>Số máy sẵn sàng</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-laptop"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" id="open-active-lap" style="cursor:pointer">
-                <!-- small box -->
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>@ViewBag.CountActive</h3>
-                        <p>Số máy đang được mượn</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-stats-bars"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" id="open-overdue-lap" style="cursor:pointer">
-                <!-- small box -->
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>0</h3>
-                        <p>Số máy quá hạn trả</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-android-warning"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" id="open-break-lap" style="cursor:pointer">
-                <!-- small box -->
-                <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h3>@ViewBag.CountBreak</h3>
-                        <p>Số máy cần sửa chữa</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-ios-cog"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-        </div>
+    <title>IT Assets Management</title>
 
-        <div class="row">
-            <div class="col-lg-3 col-6" id="open-free-lap" style="cursor:pointer">
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>@ViewBag.CountFree</h3>
-                        <p>Số máy sẵn sàng</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-laptop"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" id="open-active-lap" style="cursor:pointer">
-                <!-- small box -->
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>@ViewBag.CountActive</h3>
-                        <p>Số máy đang được mượn</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-stats-bars"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" id="open-overdue-lap" style="cursor:pointer">
-                <!-- small box -->
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>0</h3>
-                        <p>Số máy quá hạn trả</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-android-warning"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6" id="open-break-lap" style="cursor:pointer">
-                <!-- small box -->
-                <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h3>@ViewBag.CountBreak</h3>
-                        <p>Số máy cần sửa chữa</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-ios-cog"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-        </div>
+    @RenderSection("styles", required: false)
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
 
-        <!--Danh sách máy FREE-->
-        <div class="row collapse" id="tbl-free-lap">
-            <!-- Main content -->
-            <section class="content" style="width: 100%">
-                <div class="container-fluid">
-                    <div class="card">
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div class="row" style="padding-bottom: 10px">
-                                <div class="col-10">
-                                    <button id="btn-add" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#registerModal">
-                                        <i class="fas fa-edit"></i> Đăng ký
-                                    </button>
-                                </div>
-                            </div>
-                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 373px">
-                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
-                                    <thead style="background:#17a2b8; color:white; text-align:center">
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Tên máy</th>
-                                            <th>Số seri</th>
-                                            <th>Pin</th>
-                                            <th>Chuột</th>
-                                            <th>Sạc</th>
-                                        </tr>
-                                    </thead>
-                                    @foreach (var item in ViewBag.Free)
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- SEARCH FORM -->
+            <form class="form-inline ml-3">
+                <div class="input-group input-group-sm">
+                    <input class="form-control form-control-navbar" type="search" placeholder="Tìm kiếm" aria-label="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-navbar" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Messages Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-comments" style="color: dodgerblue"></i>
+                        <span class="badge badge-danger navbar-badge"></span>
+                    </a>
+                </li>
+                <!-- Notifications Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell" style="color: dodgerblue"></i>
+                        <span class="badge badge-warning navbar-badge"></span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="modal" data-target="#logoutModal" href="#" role="button" title="Đăng xuất">
+                        <i class="fas fa-sign-out-alt" style="color: dodgerblue"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="@Url.Action("Index", "Home")" class="brand-link">
+                <img src="~/adminlte/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                     style="opacity: .8">
+                <span class="brand-text font-weight-light">IT Equipments System</span>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img id="img-profile" src="~/adminlte/pictures/@((User as Assets.Web.Models.CustomPrincipal).Id).jpg" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <a data-toggle="modal" data-target="#logoutModal" href="#" class="d-block">@((User as Assets.Web.Models.CustomPrincipal).FullName)</a>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        @if ((User as CustomPrincipal).PriorityRole == 2)
+                        {
+                            <li class="nav-header">QUẢN LÝ THIẾT BỊ</li>
+                            <li class="nav-item has-treeview" id="li-computer">
+                                <a href="#" class="nav-link" id="computer">
+                                    <i class="nav-icon fas fa-th"></i>
+                                    <p>
+                                        Kho IT
+                                        <i class="right fas fa-angle-left custome-angel"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview" style="padding: 0 10px">
+                                    <li class="nav-item">
+                                        <a href="/Asset/Index" class="nav-link" id="list-computer">
+                                            <i class="fas fa-laptop-code nav-icon"></i>
+                                            <p>Laptop</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/Asset/ListEquipment" class="nav-link" id="list-equip">
+                                            <i class="fas fa-server nav-icon"></i>
+                                            <p>Thiết bị khác</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if ((User as CustomPrincipal).PriorityRole >= 1)
+                        {
+                            <li class="nav-header">ĐĂNG KÝ THIẾT BỊ</li>
+                            <li class="nav-item has-treeview" id="li-booking">
+                                <a href="#" class="nav-link" id="booking">
+                                    <i class="nav-icon fas fa-laptop-code"></i>
+                                    <p>
+                                        Laptop
+                                        <i class="right fas fa-angle-left custome-angel"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview" style="padding: 0 10px">
+                                    @if ((User as CustomPrincipal).PriorityRole == 2)
                                     {
-                                        <tr>
-                                            <td>@item.ID</td>
-                                            <td>@item.Name</td>
-                                            <td>@item.Serial</td>
-                                            <td>
-                                                @if (@item.Battery == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Mouse == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Charger == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                        </tr>
+                                        <li class="nav-item">
+                                            <a href="#" class="nav-link" id="approve">
+                                                <i class="fas fa-users nav-icon"></i>
+                                                <p>Phê duyệt</p>
+                                            </a>
+                                        </li>
                                     }
-                                </table>
-                            </div>
+                                    <li class="nav-item">
+                                        <a href="/Order/Index" class="nav-link" id="list-booking">
+                                            <i class="fas fa-list nav-icon"></i>
+                                            <p>Danh sách đăng ký</p>
+                                        </a>
+                                    </li>
+                                    @*<li class="nav-item has-treeview">
+                                            <a href="#" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>
+                                                    Level 2
+                                                    <i class="right fas fa-angle-left"></i>
+                                                </p>
+                                            </a>
+                                            <ul class="nav nav-treeview">
+                                                <li class="nav-item">
+                                                    <a href="#" class="nav-link">
+                                                        <i class="far fa-dot-circle nav-icon"></i>
+                                                        <p>Level 3</p>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#" class="nav-link">
+                                                        <i class="far fa-dot-circle nav-icon"></i>
+                                                        <p>Level 3</p>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#" class="nav-link">
+                                                        <i class="far fa-dot-circle nav-icon"></i>
+                                                        <p>Level 3</p>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>*@
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header" style="padding-bottom:4px">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0 text-dark">@ViewBag.Title</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                @if (@ViewContext.RouteData.Values["controller"].ToString() != "Home" ||
+                                    @ViewContext.RouteData.Values["action"].ToString() != "Index")
+                                {
+                                    <li class="breadcrumb-item">
+                                        @Html.ActionLink("Trang chủ", "Index", "Home")
+                                    </li>
+                                }
+                            </ol>
                         </div>
                     </div>
-                </div>
-            </section>
-        </div>
-
-        <!--Danh sách máy ĐANG ACTIVE-->
-        <div class="row collapse" id="tbl-active-lap">
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
             <!-- Main content -->
-            <section class="content" style="width: 100%">
+            <div class="content">
                 <div class="container-fluid">
-                    <div class="card">
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
-                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
-                                    <thead style="background:#28a745; color:white; text-align:center">
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Tên máy</th>
-                                            <th>Số seri</th>
-                                            <th>Pin</th>
-                                            <th>Chuột</th>
-                                            <th>Sạc</th>
-                                        </tr>
-                                    </thead>
-                                    @foreach (var item in ViewBag.Active)
-                                    {
-                                        <tr>
-                                            <td>@item.ID</td>
-                                            <td>@item.Name</td>
-                                            <td>@item.Serial</td>
-                                            <td>
-                                                @if (@item.Battery == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Mouse == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Charger == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    @RenderBody()
                 </div>
-            </section>
+            </div>
+            <!-- /.content -->
         </div>
-
-        <!--Danh sách máy BREAK-->
-        <div class="row collapse" id="tbl-break-lap">
-            <!-- Main content -->
-            <section class="content" style="width: 100%">
-                <div class="container-fluid">
-                    <div class="card">
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div style="overflow: auto; border: 1px solid #dee2e6; max-height: 550px">
-                                <table id="equip-table" class="sortable table table-bordered table-hover" style="width:100% !important; text-align: center">
-                                    <thead style="background:#dc3545; color:white; text-align:center">
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Tên máy</th>
-                                            <th>Số seri</th>
-                                            <th>Pin</th>
-                                            <th>Chuột</th>
-                                            <th>Sạc</th>
-                                        </tr>
-                                    </thead>
-                                    @foreach (var item in ViewBag.Break)
-                                    {
-                                        <tr>
-                                            <td>@item.ID</td>
-                                            <td>@item.Name</td>
-                                            <td>@item.Serial</td>
-                                            <td>
-                                                @if (@item.Battery == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Mouse == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (@item.Charger == true)
-                                                {
-                                                    <i class="fas fa-check-square" style="color: dodgerblue"></i>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+        <!-- /.content-wrapper -->
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+            <div class="p-3">
+                <h5>Title</h5>
+                <p>Sidebar content</p>
+            </div>
+        </aside>
+        <!-- /.control-sidebar -->
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="float-right d-none d-sm-inline">
+                Anything you want
+            </div>
+            <!-- Default to the left -->
+            <strong>Copyright &copy; 2020 <a href="https://autoway.hyundai.net">Trang chủ</a></strong>
+        </footer>
     </div>
+    <!-- ./wrapper -->
 
-    <!-- Modal -->
-    <div class="modal fade" id="registerModal" role="dialog">
-        <div class="modal-dialog modal-xl">
-            <!-- Modal content-->
+    <!-- REQUIRED SCRIPTS -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/adminlte/js")
+
+    <script src="~/adminlte/js/jquery.js"></script>
+    <script src="~/adminlte/js/jquery-ui.js"></script>
+    <script src="~/adminlte/jquery/bootstrap.bundle.min.js"></script>
+    <script src="~/adminlte/jquery/jquery.easing.min.js"></script>
+    <script src="~/adminlte/js/sb-admin-2.min.js"></script>
+
+    @RenderSection("scripts", required: false)
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" style="color:dodgerblue">Đăng ký thiết bị</h4>
-                    <button type="button" class="close" data-dismiss="modal" style="color:red">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="col-md-12 row-form">
-                        <div class="column form-horizontal form-left col-md-7">
-                            <div class="form-group row-1 input-group">
-                                <label class="control-label col-2 lb">Mã CNV <span class="red">(*)</span></label>
-                                <div class="col-md-4 input-group input-group-sm">
-                                    <input class="form-control input-previous-button col-md-12" id="txtEmpCode" maxlength="8" autocomplete="off" />
-                                </div>
-                            </div>
-                            <div class="form-group input-group">
-                                <label class="control-label col-md-2 top-space">Lý do <span class="red">(*)</span></label>
-                                <div class="col-md-10 input-group-sm">
-                                    <textarea class="form-control col-md-12" style="resize: none" id="reason"></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="column col-md-1 col-mid"></div>
-
-                        <!--Cột bên phải dành cho thông tin nhân viên-->
-                        <div class="column form-horizontal form-right col-md-4">
-                            <!--Ảnh profile-->
-                            <div class="form-group col-12 profile-img">
-                                <div class="img-profile" id="emp_img">
-                                    <img id="img-profile" src="~/adminlte/img/the-world.jpg" />
-                                </div>
-                            </div>
-                            <!--Thông tin profile-->
-                            <div class="form-group input-group input-group-sm">
-                                <label class="col-3 top-space" for="FullName">Họ và tên</label>
-                                <input readonly class="form-control col-9 input-previous-button" id="txtFullName" />
-                            </div>
-                            <div class="form-group input-group input-group-sm">
-                                <label class="col-3 top-space" for="Positon">Vị trí</label>
-                                <input readonly class="form-control col-9 input-previous-button" id="txtPosition" />
-                            </div>
-                            <div class="form-group input-group input-group-sm">
-                                <label class="col-3 top-space" for="Positon">Phòng ban</label>
-                                <input readonly class="form-control col-9 input-previous-button" id="txtTeam" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="note col-12">
-                        <label class="control-label" style="color: dodgerblue"><u>Lưu ý</u>: <span style="color: #858796">&nbsp;Các trường <span style="color:red">(*)</span> bắt buộc phải nhập đầy đủ.</span></label>
-                    </div>
-                    <!--Đăng ký danh sách thiết bị-->
-                    <div class="bottom">
-                        <div class="form-horizontal col-12 row-add" style="width: 100%">
-                            <div class="items-container">
-                                <table class="table-bordered table table-hover table-sm" id="lap-items" style="font-family:Source Sans Pro">
-                                    <thead style="text-align:center; font-size:0.9rem">
-                                        <tr class="table-header-items">
-                                            <th></th>
-                                            <th>Máy tính <span class="red">(*)</span></th>
-                                            <th>Chuột</th>
-                                            <th>Sạc</th>
-                                            <th>Pin</th>
-                                            <th colspan="2">Thời gian mượn máy <span class="red">(*)</span></th>
-                                            <th colspan="2">Thời gian trả máy <span class="red">(*)</span></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="row-items">
-                                            <td>
-                                                <label class="control-label btn btn-sm delete-items"><i class="fas fa-times-circle" style="color:red"></i></label>
-                                            </td>
-                                            <td class="input-group-sm">
-                                                <select class="form-control input-previous-button laptop">
-                                                    @foreach (var item in ViewBag.Free)
-                                                    {
-                                                        <option value="@item.ID" id="@item.ID">@item.Name</option>
-                                                    }
-                                                </select>
-                                            </td>
-                                            <td class="input-group-sm">
-                                            </td>
-                                            <td class="input-group-sm">
-                                            </td>
-                                            <td class="input-group-sm">
-                                            </td>
-                                            <td class="input-group-sm">
-                                                <input class="form-control datepicker bookingDate" placeholder="Ngày" style="background: white" readonly autocomplete="off" />
-                                            </td>
-                                            <td class="input-group-sm">
-                                                <input class="form-control timepicker bookingTime" placeholder="Giờ" type="time" />
-                                            </td>
-                                            <td class="input-group-sm">
-                                                <input class="form-control datepicker returnDate" placeholder="Ngày" style="background: white" readonly autocomplete="off" />
-                                            </td>
-                                            <td class="input-group-sm">
-                                                <input class="form-control timepicker returnTime" placeholder="Giờ" type="time" />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="text-align: center">
-                        <label id="add-row-items" class="btn-primary btn top-space btn-sm" title="Thêm hàng hóa khác" style="cursor: pointer; margin-top:8px;">
-                            <i class="fas fa-plus"></i>&nbsp; Thêm máy
-                        </label>
-                    </div>
+                    <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc chắn muốn thoát phiên đăng nhập?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="color:red">×</span>
+                    </button>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" id="register" class="btn btn-sm btn-primary">Đăng ký</button>
-                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Đóng</button>
+                    <a class="btn btn-primary btn-sm" href="@Url.Action("Index", "Login")">Đăng xuất</a>
+                    <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">Trở lại</button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- /.container-fluid -->
-</section>
-
-@section scripts {
-    <script src="~/adminlte/js/sortable.js"></script>
-    <script src="~/adminlte/js/jquery-confirm.js"></script>
-    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
-
-    <script>
-        //Create
-        $('#register').on("click", (event) => {
-            event.preventDefault();
-            var obj = {};
-            obj.EmpCode = $('#txtEmpCode').val();
-            obj.FullName = $('#txtFullName').val();
-            obj.Position = $('#txtPosition').val();
-            obj.Team = $('#txtTeam').val();
-            obj.Reason = $('#reason').val();
-            obj.Booking_Laptop_Items = [];
-
-            $(".row-items").each((index, item) => {
-                var objItem = {};
-                objItem.Item = $(item).find('input[class*=laptop]').val();
-                objItem.BookingDate = $(item).find('input[class*=bookingDate]').val();
-                objItem.BookingTime = $(item).find('input[class*=bookingTime]').val();
-                objItem.ReturnDate = $(item).find('input[class*=returnDate]').val();
-                objItem.ReturnTime = $(item).find('input[class*=returnTime]').val();
-
-                obj.Booking_Laptop_Items.push(objItem);
-            });
-
-            $.confirm({
-                title: "Thông báo",
-                content: function () {
-                    var self = this;
-                    return $.ajax({
-                        url: "/Home/Create",
-                        method: "POST",
-                        data: obj,
-                        success: function (mess) {
-                            if (mess === "Success") {
-                                window.location.href = "/Home/Index"
-                            }
-                            else {
-                                self.setContent(mess);
-                            }
-                        }
-                    })
-                }
-            })
-        })
-    </script>
-
-    <script>
-        //user
-        var _user = {
-            init: function () {
-                _user.registerEvent();
-            },
-            registerEvent: function () {
-                _user.getUser();
-            },
-            getUser: function () {
-                var empCode = $("#txtEmpCode").val();
-                $.ajax({
-                    url: '/User/GetUserByCode?empCode=' + empCode,
-                    type: "GET",
-                    dataType: 'json',
-                    success: function (reponse) {
-                        console.log(reponse.data);
-                        if (reponse.status) {
-                            $('#txtFullName').val(reponse.data.FullName);
-                            $('#txtPosition').val(reponse.data.Position);
-                            $('#txtTeam').val(reponse.data.Team);
-                        } else {
-                            alert("Mã nhân viên không tồn tại");
-                        }
-                    },
-                    error: function () {
-                    }
-                });
-            }
-        }
-        _user.init();
-
-        //Nhận sự kiện getUser khi gõ 7, 8 số
-        $('#txtEmpCode').keyup(function () {
-            var count = $('#txtEmpCode').val().length;
-            if (count == 7 || count == 8) {
-                _user.getUser();
-            } else {
-                $('#txtFullName').val("");
-                $('#txtPosition').val("");
-                $('#txtTeam').val("");
-            }
-        });
-    </script>
-
-    <script>
-        var date = new Date();
-        var day = date.getDate(),
-            hour = date.getHours(),
-            min = date.getMinutes();
-        day = (day < 10 ? "0" : "") + day;
-        hour = (hour < 10 ? "0" : "") + hour;
-        min = (min < 10 ? "0" : "") + min;
-        displayTime = hour + ":" + min;
-        var elements = document.getElementsByClassName("returnTime");
-        for (var i = 0, length = elements.length; i < length; i++) {
-            elements[i].value = displayTime;
-        }
-
-        $("#add-row-items").off('click').on('click', function (e) {
-            var html = `<tr class="row-items">
-                            <td>
-                                <label class="control-label btn btn-sm delete-items"><i class="fas fa-times-circle" style="color:red"></i></label>
-                            </td>
-                            <td class="input-group-sm">
-                                <select class="form-control input-previous-button laptop">
-                                    @foreach (var item in ViewBag.Free)
-                                    {
-                                        <option value="@item.ID" id="@item.ID">@item.Name</option>
-                                    }
-                                </select>
-                            </td>
-                            <td class="input-group-sm">
-                            </td>
-                            <td class="input-group-sm">
-                            </td>
-                            <td class="input-group-sm">
-                            </td>
-                            <td class="input-group-sm">
-                                <input class="form-control datepicker returnDate" placeholder="Ngày" style="background: white" readonly autocomplete="off"/>
-                            </td>
-                            <td class="input-group-sm">
-                                <input class="form-control timepicker returnTime" placeholder="Giờ" type="time"/>
-                            </td>
-                        </tr>`;
-            $('#lap-items > tbody:last-child').append(html);
-            $('.datepicker').datepicker({
-                dateFormat: 'dd/mm/yy'
-            });
-            $("#lap-items").on("click", ".delete-items", function () {
-                $(this).closest(".row-items").remove();
-            });
-        });
-        $("#lap-items").on("click", ".delete-items", function () {
-            $(this).closest(".row-items").remove();
-        });
-        $('.datepicker').datepicker({
-            dateFormat: 'dd/mm/yy'
-        });
-    </script>
-
-    <script>
-        $('#open-free-lap').on("click", (event) => {
-            $("#tbl-free-lap").removeClass('collapse');
-            $("#tbl-active-lap").addClass('collapse');
-            $("#tbl-break-lap").addClass('collapse');
-            $("#tbl-overdue-lap").addClass('collapse');
-        });
-
-        $('#open-active-lap').on("click", (event) => {
-            $("#tbl-active-lap").removeClass('collapse');
-            $("#tbl-free-lap").addClass('collapse');
-            $("#tbl-break-lap").addClass('collapse');
-            $("#tbl-overdue-lap").addClass('collapse');
-        });
-
-        $('#open-break-lap').on("click", (event) => {
-            $("#tbl-break-lap").removeClass('collapse');
-            $("#tbl-active-lap").addClass('collapse');
-            $("#tbl-free-lap").addClass('collapse');
-            $("#tbl-overdue-lap").addClass('collapse');
-        });
-    </script>
-
-    <script>
-
-    </script>
-}
-
-----------------------------------DashboardViewModel-----------------------------
-using Assets.Model.EF;
-using Assets.Web.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Assets.Web.Models
-{
-    public class DashboardViewModel
-    {
-        public UserLogin UserLogin { get; set; }
-        public Laptops Laptops { get; set; }
-        public Booking_Laptop Booking_Laptop { get; set; }
-        public ICollection<Booking_Laptop_Items> Booking_Laptop_Items { get; set; }
-    }
-}
+</body>
+</html>
